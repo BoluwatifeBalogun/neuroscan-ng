@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}About the study · NeuroScan NG{% endblock %}
+{% block content %}
+<section class="page page-narrow">
+  <div class="page-head reveal">
+    <h1>About the study</h1>
+    <p>Design and Implementation of a Web-Based Intelligent System for Early Detection of Alzheimer's Disease from MRI Images using Convolutional Neural Networks. Case study: Federal Republic of Nigeria.</p>
+  </div>
+
+  <article class="prose reveal">
+    <h2>The problem</h2>
+    <p>Alzheimer's disease is the leading cause of dementia, responsible for an estimated 60 to 70 percent of cases worldwide. It is usually identified only after noticeable decline in memory and reasoning, because the structural brain changes that precede symptoms are subtle and require specialist interpretation of MRI images. In Nigeria, where experienced neuroradiologists are concentrated in a handful of tertiary centres, most facilities have no consistent way to read these early patterns.</p>
+
+    <h2>The approach</h2>
+    <p>NeuroScan NG applies transfer learning with the VGG19 convolutional neural network. The ImageNet-pretrained convolutional base extracts visual features, and a new classification head is trained on a labelled dataset of about 6,400 brain MRI images across four classes: Non-Demented, Very Mild Demented, Mild Demented and Moderate Demented. Images are validated, resized to 224×224 pixels and normalised before both training and inference, with the dataset split into training, validation and held-out test sets to prevent data leakage.</p>
+
+    <h2>Evaluation</h2>
+    <p>Following the concerns raised in the reviewed literature about inflated and irreproducible results, the model is evaluated on a test set it never saw during training, using accuracy, precision, recall, sensitivity, specificity, F1-score and a confusion matrix. All figures are published on the model performance page.</p>
+
+    <h2>What the system is, and is not</h2>
+    <p>NeuroScan NG is a decision-support system. Its output is a preliminary classification with a confidence score, intended to assist qualified professionals in assessment and referral. An MRI image alone does not confirm Alzheimer's disease, and no prediction from this system replaces clinical history, cognitive testing, neurological examination or professional judgement.</p>
+
+    <h2>Technology</h2>
+    <p>The web application is built with Flask and SQLite, and the model is trained and served with TensorFlow and Keras. The system records each authorised user's analyses so that results can be revisited and compared over time.</p>
+  </article>
+</section>
+{% endblock %}

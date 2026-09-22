@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}Model performance · NeuroScan NG{% endblock %}
+{% block content %}
+<section class="page">
+  <div class="page-head reveal">
+    <h1>Model performance</h1>
+    <p>Evaluation of the VGG19 classifier on a held-out test set it never saw during training.</p>
+  </div>
+
+  {% if metrics %}
+  <div class="metric-grid reveal">
+    <div class="stat-card glass"><span class="stat-num">{{ '%.1f'|format(metrics.accuracy * 100) }}%</span><span class="stat-label">Accuracy</span></div>
+    <div class="stat-card glass"><span class="stat-num">{{ '%.1f'|format(metrics.macro_precision * 100) }}%</span><span class="stat-label">Precision (macro)</span></div>
+    <div class="stat-card glass"><span class="stat-num">{{ '%.1f'|format(metrics.macro_recall_sensitivity * 100) }}%</span><span class="stat-label">Recall / Sensitivity</span></div>
+    <div class="stat-card glass"><span class="stat-num">{{ '%.1f'|format(metrics.macro_specificity * 100) }}%</span><span class="stat-label">Specificity (macro)</span></div>
+    <div class="stat-card glass"><span class="stat-num">{{ '%.1f'|format(metrics.macro_f1 * 100) }}%</span><span class="stat-label">F1-score (macro)</span></div>
+    <div class="stat-card glass"><span class="stat-num">{{ metrics.test_samples }}</span><span class="stat-label">Test images</span></div>
+  </div>
+
+  <div class="table-wrap glass reveal delay-1">
+    <table>
+      <thead><tr><th>Class</th><th>Precision</th><th>Recall / Sensitivity</th><th>Specificity</th><th>F1</th><th>Support</th></tr></thead>
+      <tbody>
+        {% for name, m in metrics.per_class.items() %}
+        <tr>
+          <td>{{ class_info[name].title if name in class_info else name }}</td>
+          <td>{{ '%.1f'|format(m.precision * 100) }}%</td>
+          <td>{{ '%.1f'|format(m.recall_sensitivity * 100) }}%</td>
+          <td>{{ '%.1f'|format(m.specificity * 100) }}%</td>
+          <td>{{ '%.1f'|format(m.f1 * 100) }}%</td>
+          <td>{{ m.support }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <div class="cm-wrap glass reveal delay-2">
+    <h2>Confusion matrix</h2>
+    <div class="table-wrap">
+      <table class="cm-table">
+        <thead>
+          <tr><th>Actual ↓ / Predicted →</th>
+          {% for n in metrics.class_names %}<th>{{ class_info[n].title if n in class_info else n }}</th>{% endfor %}</tr>
+        </thead>
+        <tbody>
+          {% for row in metrics.confusion_matrix %}
+          <tr>
+            <td><b>{{ class_info[metrics.class_names[loop.index0]].title if metrics.class_names[loop.index0] in class_info else metrics.class_names[loop.index0] }}</b></td>
+            {% set outer = loop.index0 %}
+            {% for v in row %}<td class="{{ 'cm-diag' if loop.index0 == outer else '' }}">{{ v }}</td>{% endfor %}
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  {% else %}
+  <div class="empty glass reveal">
+    <h2>Training in progress</h2>
+    <p>The VGG19 model has not been evaluated yet. Once training completes on the Alzheimer's MRI dataset, copy <code>metrics.json</code> from the training output into the <code>model/</code> folder and this page will display accuracy, precision, recall, sensitivity, specificity, F1-score and the full confusion matrix.</p>
+    <a class="btn btn-outline" href="{{ url_for('about') }}">Read about the methodology</a>
+  </div>
+  {% endif %}
+</section>
+{% endblock %}

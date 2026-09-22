@@ -1,0 +1,7 @@
+flask>=3.0
+pillow>=10.0
+numpy>=1.26
+werkzeug>=3.0
+# Only needed once the trained model is installed (and for training):
+# tensorflow>=2.16
+# matplotlib>=3.8

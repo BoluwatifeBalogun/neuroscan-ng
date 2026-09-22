@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Create account · NeuroScan NG{% endblock %}
+{% block content %}
+<section class="auth-wrap">
+  <div class="auth-card glass-strong reveal">
+    <h1>Create your account</h1>
+    <p class="auth-sub">For clinicians, radiographers and researchers across Nigeria.</p>
+    <form method="post" class="form">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <label>Full name
+        <input type="text" name="full_name" required autocomplete="name" placeholder="Dr. Amina Bello">
+      </label>
+      <label>Email address
+        <input type="email" name="email" required autocomplete="email" placeholder="you@hospital.gov.ng">
+      </label>
+      <div class="form-row">
+        <label>Institution
+          <input type="text" name="institution" placeholder="e.g. LUTH, Lagos">
+        </label>
+        <label>State
+          <select name="state">
+            <option value="">Select state</option>
+            {% for s in states %}<option value="{{ s }}">{{ s }}</option>{% endfor %}
+          </select>
+        </label>
+      </div>
+      <label>Password
+        <input type="password" name="password" required minlength="8" autocomplete="new-password" placeholder="At least 8 characters">
+      </label>
+      <button class="btn btn-solid btn-lg btn-shimmer" type="submit">Create account</button>
+    </form>
+    <p class="auth-alt">Already registered? <a href="{{ url_for('login') }}">Sign in</a></p>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}Analyse · NeuroScan NG{% endblock %}
+{% block content %}
+<section class="page">
+  <div class="page-head reveal">
+    <h1>Good {{ 'morning' if now.hour < 12 else 'afternoon' if now.hour < 17 else 'evening' }}, {{ current_user.full_name.split(' ')[0] }}</h1>
+    <p>Upload a brain MRI image to get a preliminary classification with a confidence score.</p>
+  </div>
+
+  <div class="dash-grid">
+    <form class="upload-card glass-strong reveal" method="post" action="{{ url_for('predict') }}" enctype="multipart/form-data" id="uploadForm">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Upload MRI image">
+        <input type="file" name="mri" id="mriInput" accept=".jpg,.jpeg,.png,.bmp,.webp" hidden>
+        <div class="dz-idle" id="dzIdle">
+          <span class="dz-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none"><path d="M12 16V4m0 0 4 4m-4-4-4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          </span>
+          <p class="dz-title">Drop an MRI image here</p>
+          <p class="dz-sub">or click to browse · JPG, PNG, BMP, WEBP · up to {{ max_mb }} MB</p>
+        </div>
+        <div class="dz-preview" id="dzPreview" hidden>
+          <img id="previewImg" alt="Selected MRI preview">
+          <p id="previewName" class="dz-file"></p>
+        </div>
+      </div>
+      <button class="btn btn-solid btn-lg btn-shimmer" type="submit" id="analyseBtn" disabled>
+        <span class="btn-label">Analyse scan</span>
+        <span class="btn-loading" hidden><span class="spinner"></span>Analysing…</span>
+      </button>
+      <p class="upload-note">The image is validated, resized to 224×224 and normalised before classification.</p>
+    </form>
+
+    <aside class="dash-side">
+      <div class="stat-card glass reveal delay-1">
+        <span class="stat-num">{{ stats.total or 0 }}</span>
+        <span class="stat-label">scans analysed</span>
+      </div>
+      <div class="stat-card glass reveal delay-2">
+        <span class="stat-num">{{ stats.flagged or 0 }}</span>
+        <span class="stat-label">flagged for review</span>
+      </div>
+      <div class="stat-card glass reveal delay-3">
+        <span class="stat-num">{{ '%.0f'|format((stats.avg_conf or 0) * 100) }}%</span>
+        <span class="stat-label">average confidence</span>
+      </div>
+    </aside>
+  </div>
+
+  {% if recent %}
+  <div class="recent reveal">
+    <div class="recent-head">
+      <h2>Recent scans</h2>
+      <a href="{{ url_for('history') }}" class="link-quiet">Full history</a>
+    </div>
+    <div class="table-wrap glass">
+      <table>
+        <thead><tr><th>Scan</th><th>Result</th><th>Confidence</th><th>Date</th><th></th></tr></thead>
+        <tbody>
+          {% for s in recent %}
+          <tr>
+            <td class="td-file">{{ s.original_name }}</td>
+            <td><span class="badge tone-{{ class_info[s.predicted_class].tone }}">{{ class_info[s.predicted_class].title }}</span></td>
+            <td>{{ '%.1f'|format(s.confidence * 100) }}%</td>
+            <td class="td-date">{{ s.created_at[:10] }}</td>
+            <td><a class="link-quiet" href="{{ url_for('result', scan_id=s.id) }}">Open</a></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
+</section>
+{% endblock %}

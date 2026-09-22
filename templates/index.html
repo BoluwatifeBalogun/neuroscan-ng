@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+{% block title %}NeuroScan NG · Early Alzheimer's detection from MRI, for Nigeria{% endblock %}
+{% block bodyclass %}landing{% endblock %}
+{% block content %}
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <div class="aurora" aria-hidden="true">
+    <span class="blob b1"></span><span class="blob b2"></span><span class="blob b3"></span>
+    <span class="hero-grid"></span>
+  </div>
+
+  <div class="hero-inner">
+    <div class="hero-copy reveal">
+      <p class="hero-kicker"><span class="flag-chip" aria-hidden="true"><i></i><i></i><i></i></span>Built for Nigerian healthcare, nationwide</p>
+      <h1>See the earliest signs of Alzheimer's, before they become obvious.</h1>
+      <p class="hero-sub">NeuroScan NG analyses brain MRI images with a VGG19 convolutional neural network and returns a preliminary classification with a confidence score in seconds: a second pair of eyes for clinicians across all 36 states and the FCT.</p>
+      <div class="hero-actions">
+        <a class="btn btn-solid btn-lg btn-shimmer" href="{{ url_for('register') }}">Analyse an MRI scan</a>
+        <a class="btn btn-outline btn-lg" href="{{ url_for('about') }}">How the system works</a>
+      </div>
+      <p class="hero-disclaimer">Decision support only. Results require professional medical interpretation.</p>
+    </div>
+
+    <!-- Live analysis mockup -->
+    <div class="hero-visual reveal delay-1" aria-hidden="true">
+      <div class="scan-card glass-strong">
+        <div class="scan-head">
+          <span class="scan-title">MRI analysis</span>
+          <span class="scan-status"><span class="pulse"></span>Processing</span>
+        </div>
+        <div class="scan-frame">
+          <svg class="brain-svg" viewBox="0 0 200 200" fill="none">
+            <ellipse cx="100" cy="102" rx="72" ry="84" fill="#04331C"/>
+            <path d="M100 22c-38 0-64 34-64 78 0 30 14 54 32 66 6-10 2-20-3-30-6-12-9-24-4-38 4-12 14-18 24-20-6 10-8 22-2 32 5 9 14 13 17 24 3-11 12-15 17-24 6-10 4-22-2-32 10 2 20 8 24 20 5 14 2 26-4 38-5 10-9 20-3 30 18-12 32-36 32-66 0-44-26-78-64-78Z" fill="#0DA65D" opacity=".55"/>
+            <path d="M100 40c-26 0-45 26-45 58 0 20 8 37 20 47" stroke="#7FE0AE" stroke-width="2.5" stroke-linecap="round" opacity=".8"/>
+            <path d="M100 40c26 0 45 26 45 58 0 20-8 37-20 47" stroke="#7FE0AE" stroke-width="2.5" stroke-linecap="round" opacity=".8"/>
+          </svg>
+          <span class="scan-line"></span>
+        </div>
+        <div class="scan-probs">
+          <div class="prob-row"><span>Non-Demented</span><span class="prob-bar"><i style="--w:82%"></i></span><b>82%</b></div>
+          <div class="prob-row"><span>Very Mild</span><span class="prob-bar"><i style="--w:11%"></i></span><b>11%</b></div>
+          <div class="prob-row"><span>Mild</span><span class="prob-bar"><i style="--w:5%"></i></span><b>5%</b></div>
+          <div class="prob-row"><span>Moderate</span><span class="prob-bar"><i style="--w:2%"></i></span><b>2%</b></div>
+        </div>
+        <div class="scan-foot">VGG19 · 224×224 · softmax confidence</div>
+      </div>
+      <div class="float-chip chip-a glass">CNN · Transfer learning</div>
+      <div class="float-chip chip-b glass">~1.2s per scan</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ STATES MARQUEE ============ -->
+<section class="marquee-band" aria-label="Coverage across Nigeria">
+  <p class="band-label">One system, every state</p>
+  <div class="marquee">
+    <div class="marquee-track">
+      {% for s in states %}<span class="state-pill">{{ s }}</span>{% endfor %}
+      {% for s in states %}<span class="state-pill" aria-hidden="true">{{ s }}</span>{% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- ============ WHY ============ -->
+<section class="section">
+  <div class="section-head reveal">
+    <h2>Why early detection needs help in Nigeria</h2>
+    <p>Specialist radiologists are scarce and unevenly distributed, so subtle Alzheimer's-related changes on MRI are easy to miss until cognitive decline is already advanced. NeuroScan NG gives every facility with a browser a consistent preliminary read.</p>
+  </div>
+  <div class="cards" data-spotlight-group>
+    <article class="card spotlight reveal">
+      <div class="card-icon"><svg viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="1.8"/><path d="m20 20-3.5-3.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+      <h3>Subtle patterns, surfaced</h3>
+      <p>The network learns structural patterns of atrophy from thousands of labelled scans, including differences between healthy ageing and very mild impairment that are hard to describe by eye.</p>
+    </article>
+    <article class="card spotlight reveal delay-1">
+      <div class="card-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3v18M3 12h18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/></svg></div>
+      <h3>Consistent everywhere</h3>
+      <p>The same trained model reads a scan the same way in Maiduguri, Lagos or Enugu. No dependence on which specialist happens to be on duty.</p>
+    </article>
+    <article class="card spotlight reveal delay-2">
+      <div class="card-icon"><svg viewBox="0 0 24 24" fill="none"><path d="M12 8v5l3 2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/><circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.8"/></svg></div>
+      <h3>Seconds, not sessions</h3>
+      <p>Upload, preprocess, classify: a preliminary result with a confidence score in under two seconds, so triage and referral decisions are not waiting on a reading queue.</p>
+    </article>
+  </div>
+</section>
+
+<!-- ============ PIPELINE ============ -->
+<section class="section section-tint">
+  <div class="section-head reveal">
+    <h2>From upload to preliminary result</h2>
+    <p>A fixed, auditable pipeline, the same one described in the study methodology.</p>
+  </div>
+  <ol class="pipeline">
+    <li class="reveal"><span class="step-no">1</span><div><h3>Upload</h3><p>An authorised clinician uploads a brain MRI image. The file is validated for type, size and integrity before anything else happens.</p></div></li>
+    <li class="reveal delay-1"><span class="step-no">2</span><div><h3>Preprocess</h3><p>The image is converted to RGB, resized to 224×224 and normalised, exactly matching how training images were prepared.</p></div></li>
+    <li class="reveal delay-2"><span class="step-no">3</span><div><h3>Classify</h3><p>A fine-tuned VGG19 network assigns the scan to one of four classes: Non-Demented, Very Mild, Mild or Moderate Demented.</p></div></li>
+    <li class="reveal delay-3"><span class="step-no">4</span><div><h3>Review</h3><p>The clinician sees the predicted class, its confidence score and the full probability breakdown, then applies clinical judgement. Every result is stored for follow-up.</p></div></li>
+  </ol>
+</section>
+
+<!-- ============ EVIDENCE ============ -->
+<section class="section">
+  <div class="evidence glass-strong reveal">
+    <div class="evidence-copy">
+      <h2>Measured, not assumed</h2>
+      <p>The model is evaluated the way the literature demands: a held-out test set the network has never seen, with accuracy, precision, recall, sensitivity, specificity, F1-score and a full confusion matrix published on the performance page.</p>
+      <a class="btn btn-outline" href="{{ url_for('performance') }}">View model performance</a>
+    </div>
+    <div class="evidence-stats">
+      <div class="stat"><span class="stat-num" data-count="6400">0</span><span class="stat-label">labelled MRI images in the training corpus</span></div>
+      <div class="stat"><span class="stat-num" data-count="4">0</span><span class="stat-label">diagnostic classes across the Alzheimer's continuum</span></div>
+      <div class="stat"><span class="stat-num" data-count="7">0</span><span class="stat-label">evaluation metrics reported for every trained model</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CTA ============ -->
+<section class="cta-band">
+  <div class="cta-inner reveal">
+    <h2>Give your next MRI a second read.</h2>
+    <p>Create a free account for your facility and analyse your first scan in under a minute.</p>
+    <a class="btn btn-light btn-lg" href="{{ url_for('register') }}">Create account</a>
+  </div>
+</section>
+
+{% endblock %}

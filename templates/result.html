@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Result · NeuroScan NG{% endblock %}
+{% block content %}
+{% set info = class_info[scan.predicted_class] %}
+<section class="page">
+  <div class="page-head reveal">
+    <h1>Analysis result</h1>
+    <p>{{ scan.original_name }} · {{ scan.created_at[:19].replace('T', ' at ') }} UTC · processed in {{ scan.elapsed_ms }} ms</p>
+  </div>
+
+  {% if scan.atypical %}
+  <div class="notice notice-warn reveal">This image does not look like a typical grayscale MRI slice. The classification below is unlikely to be meaningful; confirm the correct scan was uploaded.</div>
+  {% endif %}
+
+  {% if scan.mode == 'demo' %}
+  <div class="notice notice-warn reveal">This result was produced in demo mode without the trained model. It is a placeholder for testing the system flow, not a model prediction.</div>
+  {% endif %}
+
+  <div class="result-grid">
+    <div class="result-main glass-strong reveal">
+      <div class="result-top">
+        <div class="scan-pair">
+          <figure>
+            <img class="result-img" src="{{ url_for('scan_image', scan_id=scan.id) }}" alt="Uploaded MRI scan">
+            <figcaption>Uploaded scan</figcaption>
+          </figure>
+          {% if has_cam %}
+          <figure>
+            <img class="result-img" src="{{ url_for('scan_cam', scan_id=scan.id) }}" alt="Grad-CAM heatmap showing the regions that influenced the prediction">
+            <figcaption>Grad-CAM: regions driving the prediction</figcaption>
+          </figure>
+          {% endif %}
+        </div>
+        <div class="result-verdict">
+          <span class="badge badge-lg tone-{{ info.tone }}">{{ info.title }}</span>
+          <div class="conf-ring" style="--pct: {{ (scan.confidence * 100)|round(1) }}">
+            <svg viewBox="0 0 120 120">
+              <circle class="ring-bg" cx="60" cy="60" r="52"/>
+              <circle class="ring-fg" cx="60" cy="60" r="52"/>
+            </svg>
+            <div class="ring-text"><b>{{ '%.1f'|format(scan.confidence * 100) }}%</b><span>confidence</span></div>
+          </div>
+        </div>
+      </div>
+      <p class="result-summary">{{ info.summary }}</p>
+      <div class="notice notice-info">This is a preliminary, decision-support result. It must be interpreted by a qualified medical professional alongside clinical history, cognitive assessment and other findings. It is not a diagnosis.</div>
+    </div>
+
+    <div class="result-side glass reveal delay-1">
+      <h2>Class probabilities</h2>
+      {% for name, p in ordered %}
+      <div class="prob-row prob-anim">
+        <span>{{ class_info[name].title }}</span>
+        <span class="prob-bar"><i style="--w: {{ (p * 100)|round(1) }}%"></i></span>
+        <b>{{ '%.1f'|format(p * 100) }}%</b>
+      </div>
+      {% endfor %}
+      <div class="result-actions">
+        <a class="btn btn-solid btn-shimmer" href="{{ url_for('dashboard') }}">Analyse another scan</a>
+        <a class="btn btn-ghost" href="{{ url_for('history') }}">View history</a>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

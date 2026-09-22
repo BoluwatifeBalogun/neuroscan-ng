@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block title %}{{ code }} · NeuroScan NG{% endblock %}
+{% block content %}
+<section class="page">
+  <div class="empty glass reveal">
+    <h2>{{ code }}</h2>
+    <p>{{ message }}</p>
+    <a class="btn btn-solid btn-shimmer" href="{{ url_for('index') }}">Back to home</a>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,6 @@
+__pycache__/
+*.pyc
+neuroscan.db
+uploads/*
+!uploads/.gitkeep
+.env

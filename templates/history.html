@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}History · NeuroScan NG{% endblock %}
+{% block content %}
+<section class="page">
+  <div class="page-head reveal">
+    <h1>Scan history</h1>
+    <p>Every analysis you have run, newest first.</p>
+  </div>
+
+  {% if scans %}
+  <div class="table-wrap glass reveal">
+    <table>
+      <thead><tr><th>#</th><th>Scan</th><th>Result</th><th>Confidence</th><th>Mode</th><th>Date</th><th></th></tr></thead>
+      <tbody>
+        {% for s in scans %}
+        <tr>
+          <td>{{ loop.revindex }}</td>
+          <td class="td-file">{{ s.original_name }}</td>
+          <td><span class="badge tone-{{ class_info[s.predicted_class].tone }}">{{ class_info[s.predicted_class].title }}</span></td>
+          <td>{{ '%.1f'|format(s.confidence * 100) }}%</td>
+          <td class="td-date">{{ 'Model' if s.mode == 'model' else 'Demo' }}</td>
+          <td class="td-date">{{ s.created_at[:10] }}</td>
+          <td><a class="link-quiet" href="{{ url_for('result', scan_id=s.id) }}">Open</a></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty glass reveal">
+    <h2>No scans yet</h2>
+    <p>Analyse your first MRI to start building a history.</p>
+    <a class="btn btn-solid btn-shimmer" href="{{ url_for('dashboard') }}">Analyse a scan</a>
+  </div>
+  {% endif %}
+</section>
+{% endblock %}
