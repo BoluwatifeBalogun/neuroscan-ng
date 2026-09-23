@@ -4,3 +4,4 @@ neuroscan.db
 uploads/*
 !uploads/.gitkeep
 .env
+model/*.keras

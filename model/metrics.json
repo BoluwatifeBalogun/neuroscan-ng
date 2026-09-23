@@ -1,0 +1,70 @@
+{
+  "accuracy": 0.5958,
+  "macro_precision": 0.4664,
+  "macro_recall_sensitivity": 0.6455,
+  "macro_specificity": 0.8389,
+  "macro_f1": 0.4924,
+  "per_class": {
+    "MildDemented": {
+      "precision": 0.4107,
+      "recall_sensitivity": 0.3651,
+      "specificity": 0.9209,
+      "f1": 0.3866,
+      "support": 126
+    },
+    "ModerateDemented": {
+      "precision": 0.2162,
+      "recall_sensitivity": 1.0,
+      "specificity": 0.9695,
+      "f1": 0.3556,
+      "support": 8
+    },
+    "NonDemented": {
+      "precision": 0.7311,
+      "recall_sensitivity": 0.7311,
+      "specificity": 0.7355,
+      "f1": 0.7311,
+      "support": 476
+    },
+    "VeryMildDemented": {
+      "precision": 0.5075,
+      "recall_sensitivity": 0.4857,
+      "specificity": 0.7295,
+      "f1": 0.4964,
+      "support": 350
+    }
+  },
+  "confusion_matrix": [
+    [
+      46,
+      7,
+      10,
+      63
+    ],
+    [
+      0,
+      8,
+      0,
+      0
+    ],
+    [
+      20,
+      6,
+      348,
+      102
+    ],
+    [
+      46,
+      16,
+      118,
+      170
+    ]
+  ],
+  "class_names": [
+    "MildDemented",
+    "ModerateDemented",
+    "NonDemented",
+    "VeryMildDemented"
+  ],
+  "test_samples": 960
+}
