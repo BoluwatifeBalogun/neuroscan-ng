@@ -1,8 +1,22 @@
 # NeuroScan NG: Hosting Guide
 
-Two paths. Path A is free and takes about 20 minutes, good for your defense. Path B is a real server that keeps records, free for a year with the GitHub Student Pack.
+> **Update (Sept 2026):** Hugging Face now requires a paid PRO plan for Docker and CPU Gradio Spaces, so Path A below has changed to **Render**, which still has a free tier with no card required. The HF instructions are kept at the bottom for anyone with PRO.
 
-Both start the same way: put the code on GitHub.
+## Path A: Render (free, no card, easiest)
+
+Prerequisite: your code is on GitHub (GitHub Desktop: Commit, then Push origin).
+
+1. Go to render.com, click Get Started, sign up **with your GitHub account**.
+2. Dashboard > New > Web Service.
+3. Pick your `neuroscan-ng` repo from the list (click Configure account if it is not shown, and grant access to the repo).
+4. Render reads `render.yaml` from the repo and fills everything in: free plan, build and start commands, and it generates `NEUROSCAN_SECRET` for you. Just click **Deploy Web Service**.
+5. Wait 3 to 5 minutes for the first build. Your app is live at `https://neuroscan-ng.onrender.com` (exact URL shown at the top of the service page).
+6. From now on, every **Push origin** in GitHub Desktop redeploys automatically. No extra setup.
+
+Free-tier behaviour to expect:
+- The service sleeps after 15 minutes without visitors and takes about a minute to wake on the next request. Open your link a few minutes before any demo so it is warm.
+- Storage is ephemeral: accounts and scan history reset on redeploys and restarts. Fine for demos.
+- 512 MB RAM fits the app in demo mode. It is NOT enough for TensorFlow + VGG19, so the trained model cannot run here; use Path B for that.
 
 ## Step 0: Push to GitHub (both paths)
 
@@ -31,24 +45,6 @@ git add .gitattributes model/
 git commit -m "Add trained model"
 git push
 ```
-
-## Path A: Hugging Face Spaces (free)
-
-1. Create an account at huggingface.co, verify your email.
-2. Click your avatar > New Space. Name: `neuroscan-ng`. License: mit. SDK: **Docker** (blank template). Hardware: CPU basic (free). Visibility: Public. Create.
-3. Connect your code. Easiest way, from your local folder:
-
-```bash
-git remote add hf https://huggingface.co/spaces/YOUR_HF_USERNAME/neuroscan-ng
-git push hf main
-```
-
-   When asked for a password, use a Hugging Face access token (Settings > Access Tokens > New token, type Write).
-4. In the Space page: Settings > Variables and secrets > New secret. Name: `NEUROSCAN_SECRET`. Value: any long random string (run `python -c "import secrets; print(secrets.token_hex(32))"` to make one).
-5. The Space builds automatically from the Dockerfile (5 to 10 minutes the first time). When the status turns green, your app is live at `https://YOUR_HF_USERNAME-neuroscan-ng.hf.space`.
-6. Every future `git push hf main` redeploys automatically.
-
-Know this limitation: Space storage is ephemeral. The SQLite database and uploaded scans reset whenever the Space rebuilds or restarts. Fine for demos and your defense, not for keeping real records.
 
 ## Path B: DigitalOcean droplet (persistent, professional)
 
@@ -124,3 +120,22 @@ After running `train_neuroscan_colab.ipynb`, unzip `neuroscan_model.zip` into `m
 - [ ] Register a test account, upload a scan, confirm the result page loads
 - [ ] `/performance` shows your trained metrics (or the honest pending state)
 - [ ] On Path B: HTTPS working, `systemctl status neuroscan` green after a reboot (`reboot` once to confirm)
+
+## Appendix: Hugging Face Spaces (now requires PRO, $9/month)
+
+1. Create an account at huggingface.co, verify your email.
+2. Click your avatar > New Space. Name: `neuroscan-ng`. License: mit. SDK: **Docker** (blank template). Hardware: CPU basic (free). Visibility: Public. Create.
+3. Connect your code. Easiest way, from your local folder:
+
+```bash
+git remote add hf https://huggingface.co/spaces/YOUR_HF_USERNAME/neuroscan-ng
+git push hf main
+```
+
+   When asked for a password, use a Hugging Face access token (Settings > Access Tokens > New token, type Write).
+4. In the Space page: Settings > Variables and secrets > New secret. Name: `NEUROSCAN_SECRET`. Value: any long random string (run `python -c "import secrets; print(secrets.token_hex(32))"` to make one).
+5. The Space builds automatically from the Dockerfile (5 to 10 minutes the first time). When the status turns green, your app is live at `https://YOUR_HF_USERNAME-neuroscan-ng.hf.space`.
+6. Every future `git push hf main` redeploys automatically.
+
+Know this limitation: Space storage is ephemeral. The SQLite database and uploaded scans reset whenever the Space rebuilds or restarts. Fine for demos and your defense, not for keeping real records.
+

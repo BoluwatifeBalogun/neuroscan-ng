@@ -235,6 +235,19 @@ def main():
                    callbacks=callbacks)
 
     model.save(os.path.join(args.out_dir, "alzheimer_vgg19.keras"))
+
+    # TensorFlow Lite export (float16): ~40 MB model that runs on small
+    # hosts (e.g. Render free tier) via tflite-runtime, no full TF needed.
+    try:
+        converter = tf.lite.TFLiteConverter.from_keras_model(model)
+        converter.optimizations = [tf.lite.Optimize.DEFAULT]
+        converter.target_spec.supported_types = [tf.float16]
+        with open(os.path.join(args.out_dir, "alzheimer_vgg19.tflite"), "wb") as f:
+            f.write(converter.convert())
+        print("TFLite export: alzheimer_vgg19.tflite")
+    except Exception as exc:
+        print("TFLite export skipped:", exc)
+
     plot_history([h1, h2], args.out_dir)
     metrics = evaluate(model, test_ds, class_names, args.out_dir)
     print(json.dumps({k: v for k, v in metrics.items()

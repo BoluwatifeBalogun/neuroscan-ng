@@ -144,6 +144,7 @@ class PredictionEngine:
 
     def __init__(self):
         self._model = None
+        self._tflite = None
         self._labels = None
         self._checked = False
         self.mode = "demo"
@@ -155,22 +156,50 @@ class PredictionEngine:
                 return p
         return None
 
+    def _load_labels(self, labels_path):
+        if os.path.exists(labels_path):
+            with open(labels_path) as f:
+                self._labels = json.load(f)
+        else:
+            self._labels = DEFAULT_LABELS
+
     def load(self):
         if self._checked:
             return
         self._checked = True
-        path = self._model_path()
         labels_path = os.path.join(MODEL_DIR, "labels.json")
+
+        # Preferred on small hosts: TFLite model via the lightweight runtime.
+        tflite_path = os.path.join(MODEL_DIR, "alzheimer_vgg19.tflite")
+        if os.path.exists(tflite_path):
+            interpreter = None
+            try:
+                from tflite_runtime.interpreter import Interpreter
+                interpreter = Interpreter(model_path=tflite_path)
+            except ImportError:
+                try:
+                    import tensorflow as tf
+                    interpreter = tf.lite.Interpreter(model_path=tflite_path)
+                except ImportError:
+                    interpreter = None
+            if interpreter is not None:
+                try:
+                    interpreter.allocate_tensors()
+                    self._tflite = interpreter
+                    self._load_labels(labels_path)
+                    self.mode = "model"
+                    return
+                except Exception as exc:  # pragma: no cover
+                    app.logger.warning("TFLite load failed: %s", exc)
+
+        # Full Keras model (needed for Grad-CAM) where TensorFlow fits.
+        path = self._model_path()
         if path is None:
             return
         try:
             import tensorflow as tf  # noqa: local import keeps demo mode light
             self._model = tf.keras.models.load_model(path)
-            if os.path.exists(labels_path):
-                with open(labels_path) as f:
-                    self._labels = json.load(f)
-            else:
-                self._labels = DEFAULT_LABELS
+            self._load_labels(labels_path)
             self.mode = "model"
         except Exception as exc:  # pragma: no cover
             app.logger.warning("Model load failed, staying in demo mode: %s", exc)
@@ -219,7 +248,14 @@ class PredictionEngine:
     def predict(self, image_bytes):
         self.load()
         batch = self.preprocess(image_bytes)
-        if self._model is not None:
+        if self._tflite is not None:
+            inp = self._tflite.get_input_details()[0]
+            out = self._tflite.get_output_details()[0]
+            self._tflite.set_tensor(inp["index"], batch.astype(np.float32))
+            self._tflite.invoke()
+            probs = self._tflite.get_tensor(out["index"])[0].astype(float)
+            mode = "model"
+        elif self._model is not None:
             probs = self._model.predict(batch, verbose=0)[0].astype(float)
             mode = "model"
         else:
