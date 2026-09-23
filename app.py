@@ -228,12 +228,15 @@ class PredictionEngine:
     @staticmethod
     def preprocess(image_bytes):
         """Validate + prepare an MRI image exactly as done at training time:
-        RGB conversion, resize to 224x224, scale to [0, 1]."""
+        RGB conversion, resize to 224x224, then VGG19 ImageNet preprocessing
+        (BGR channel order, ImageNet channel means subtracted)."""
         img = Image.open(io.BytesIO(image_bytes))
         img.verify()
         img = Image.open(io.BytesIO(image_bytes)).convert("RGB")
         img = img.resize(IMG_SIZE, Image.LANCZOS)
-        arr = np.asarray(img, dtype=np.float32) / 255.0
+        arr = np.asarray(img, dtype=np.float32)
+        arr = arr[..., ::-1] - np.array([103.939, 116.779, 123.68],
+                                        dtype=np.float32)
         return np.expand_dims(arr, axis=0)
 
     def _demo_probs(self, image_bytes):
