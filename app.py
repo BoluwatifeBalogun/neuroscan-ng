@@ -176,11 +176,12 @@ class PredictionEngine:
             try:
                 from tflite_runtime.interpreter import Interpreter
                 interpreter = Interpreter(model_path=tflite_path)
-            except ImportError:
+            except Exception as exc:
+                app.logger.warning("tflite-runtime unavailable: %s", exc)
                 try:
                     import tensorflow as tf
                     interpreter = tf.lite.Interpreter(model_path=tflite_path)
-                except ImportError:
+                except Exception:
                     interpreter = None
             if interpreter is not None:
                 try:
